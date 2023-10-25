@@ -6,26 +6,22 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.ClipData;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import java.util.ArrayList;
+import com.example.todo_app.MyAdapter.TodoItem;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
 
-import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<String> items;
+    private ArrayList<MyAdapter.TodoItem> items;
     private RecyclerView recyclerView;
     private Button button;
     private MyAdapter itemsAdapter;
@@ -81,7 +77,8 @@ public class MainActivity extends AppCompatActivity {
         String itemText = input.getText().toString();
 
         if(!itemText.isEmpty()) {
-            items.add(itemText);
+            TodoItem todoItem = new MyAdapter.TodoItem(itemText, false, true);
+            items.add(0,todoItem);
             itemsAdapter.notifyDataSetChanged();
             input.setText("");
         }
@@ -121,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
         itemsAdapter.notifyDataSetChanged();
         Toast.makeText(getApplicationContext(), "Item removed", Toast.LENGTH_SHORT).show();
     }
-
 
 
 
