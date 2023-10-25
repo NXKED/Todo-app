@@ -26,10 +26,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         private boolean completed;
         private boolean hasCheckbox;
 
-        public TodoItem(String taskName, boolean completed, boolean hasCheckbox) {
+        private String taskCreator;
+
+        public TodoItem(String taskName, String taskCreator, boolean completed, boolean hasCheckbox) {
             this.taskName = taskName;
             this.completed = completed;
             this.hasCheckbox = hasCheckbox;
+            this.taskCreator = taskCreator;
         }
 
         public boolean isCompleted() {
@@ -44,9 +47,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             return taskName;
         }
 
+        public String getTaskCreator() {
+            return taskCreator;
+        }
+
         public boolean isHasCheckbox() {
             return hasCheckbox;
         }
+    }
+
+
+    //method to set items for filter
+    public void setItems(ArrayList<TodoItem> items) {
+        this.items = items;
     }
 
 
@@ -59,6 +72,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         TodoItem item = items.get(position);
         holder.textView.setText(item.getTaskName());
+        holder.creatorView.setText(item.getTaskCreator());
 
         if (item.hasCheckbox) {
             holder.checkbox.setVisibility(View.VISIBLE);
@@ -83,12 +97,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
+        TextView creatorView;
         CheckBox checkbox;
 
         public ViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.taskName);
             checkbox = itemView.findViewById(R.id.checkbox);
+            creatorView = itemView.findViewById(R.id.taskCreator);
         }
     }
 

@@ -6,11 +6,12 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import java.util.ArrayList;
@@ -25,24 +26,26 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private Button button;
     private MyAdapter itemsAdapter;
-
+    private TextView itemCountTextView;
+    private int itemCounter = 0;
+    boolean itsMe = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         recyclerView = findViewById(R.id.recyclerView);
         button = findViewById(R.id.button);
+        itemCountTextView = findViewById(R.id.todoCount);
+        CheckBox checkboxMe = findViewById(R.id.checkboxMe);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                    additem(view);
-            }
-        });
 
+
+        itemCountTextView.setText(String.valueOf(itemCounter));
+        button.setOnClickListener(view -> addItem());
+
+        // adding a list to add items to
         items = new ArrayList<>();
         itemsAdapter = new MyAdapter(this, items);
         recyclerView.setAdapter(itemsAdapter);
@@ -50,37 +53,38 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(itemsAdapter);
 
         // adding a divider between the todos
-
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        button.setOnClickListener(new View.OnClickListener() {
+        button.setOnClickListener(view -> addItem());
+
+        // checkbox to have only my to-do's
+        checkboxMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                additem(view);
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                itsMe = isChecked;
+                updateRecyclerView();
             }
         });
 
         enableSwipeToDelete();
     }
-    private boolean remove(int position) {
-        Context context = getApplicationContext();
-        Toast.makeText(context, "Item removed", Toast.LENGTH_SHORT).show();
-        items.remove(position);
-        itemsAdapter.notifyDataSetChanged();
-        return true;
 
-    }
-
-    private void additem(View view) {
+    private void addItem() {
         EditText input = findViewById(R.id.edit_text);
         String itemText = input.getText().toString();
+        String taskCreatorName = "Max Mustermann";
 
         if(!itemText.isEmpty()) {
-            TodoItem todoItem = new MyAdapter.TodoItem(itemText, false, true);
+            TodoItem todoItem = new MyAdapter.TodoItem(itemText, taskCreatorName, false, true);
             items.add(0,todoItem);
             itemsAdapter.notifyDataSetChanged();
             input.setText("");
+
+            //update item counter
+            itemCounter++;
+            itemCountTextView.setText(String.valueOf(itemCounter));
+
         }
         else {
             Toast.makeText(getApplicationContext(), "No Text entered", Toast.LENGTH_LONG).show();
@@ -106,6 +110,11 @@ public class MainActivity extends AppCompatActivity {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
                 removeItem(position);
+
+
+                //update todoCounter
+                itemCounter--;
+                itemCountTextView.setText(String.valueOf(itemCounter));
             }
         };
 
@@ -116,8 +125,23 @@ public class MainActivity extends AppCompatActivity {
     private void removeItem(int position) {
         items.remove(position);
         itemsAdapter.notifyDataSetChanged();
+        updateRecyclerView();
         Toast.makeText(getApplicationContext(), "Item removed", Toast.LENGTH_SHORT).show();
     }
+
+    private void updateRecyclerView() {
+        ArrayList<MyAdapter.TodoItem> filteredItems = new ArrayList<>();
+
+        for(MyAdapter.TodoItem item : items) {
+            if (!itsMe || !("Max Mustermann".equals(item.getTaskCreator()))) {
+                filteredItems.add(item);
+            }
+        }
+
+        itemsAdapter.setItems(filteredItems);
+        itemsAdapter.notifyDataSetChanged();
+    }
+
 
 
 

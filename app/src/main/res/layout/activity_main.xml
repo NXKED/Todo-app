@@ -34,22 +34,42 @@
 
     </LinearLayout>
 
-    <CheckBox
-        android:id="@+id/checkbox"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginBottom="12dp"
+        android:orientation="horizontal"
         android:background="#DB673AB7"
-        android:text="functionalitystillopen"
-        android:textAllCaps="true"
-        android:textColor="#FFFFFF" />
+        >
+
+        <CheckBox
+            android:id="@+id/checkboxMe"
+            android:layout_width="344dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="0dp"
+            android:text="Just my to-do's"
+            android:textAllCaps="true"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/todoCount"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:gravity="center_vertical|center_horizontal"
+            android:inputType="number"
+            android:textColor="#FBFBFB"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            tools:text="99" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
+        android:layout_marginTop="12dp"
         android:padding="8dp" />
 
 
