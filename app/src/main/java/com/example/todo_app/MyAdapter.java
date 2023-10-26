@@ -15,10 +15,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private Context context;
     private ArrayList<TodoItem> items;
+    private OnItemLongClickListener longClickListener;
 
-    public MyAdapter(Context context, ArrayList<TodoItem> items) {
+
+    public MyAdapter(Context context, ArrayList<TodoItem> items, OnItemLongClickListener longClickListener) {
         this.context = context;
         this.items = items;
+        this.longClickListener = longClickListener;
     }
 
     public static class TodoItem {
@@ -49,6 +52,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         public String getTaskCreator() {
             return taskCreator;
+        }
+        public void setTaskCreator(String taskCreator) {
+            this.taskCreator = taskCreator;
         }
 
         public boolean isHasCheckbox() {
@@ -87,7 +93,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
            }
        });
 
-                holder.checkbox.setChecked(item.isCompleted());
+        holder.checkbox.setChecked(item.isCompleted());
+
+        // on long click listener
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                longClickListener.onItemLongClick(position);
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -107,6 +123,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             creatorView = itemView.findViewById(R.id.taskCreator);
         }
     }
+
+    // implementing long Item click
+    public interface OnItemLongClickListener {
+        void onItemLongClick(int position);
+    }
+
 
 
 

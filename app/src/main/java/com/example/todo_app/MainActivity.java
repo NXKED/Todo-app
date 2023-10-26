@@ -1,12 +1,15 @@
 package com.example.todo_app;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -47,7 +50,12 @@ public class MainActivity extends AppCompatActivity {
 
         // adding a list to add items to
         items = new ArrayList<>();
-        itemsAdapter = new MyAdapter(this, items);
+        itemsAdapter = new MyAdapter(this, items, new MyAdapter.OnItemLongClickListener() {
+            @Override
+            public void onItemLongClick(int position) {
+                showTaskCreatorChange(position);
+            }
+        });
         recyclerView.setAdapter(itemsAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(itemsAdapter);
@@ -143,6 +151,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void showTaskCreatorChange(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Change Task Creator");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newTaskCreator = input.getText().toString();
+                if(!newTaskCreator.isEmpty()) {
+                    items.get(position).setTaskCreator(newTaskCreator);
+                    itemsAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+    }
 
 
 
