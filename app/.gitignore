@@ -1,1 +1,31 @@
-/build
+# Gradle files
+.gradle/
+build/
+local.properties
+
+# Android Studio files
+/.idea
+*.iml
+
+# User-specific files
+/.gradle
+/.idea
+/captures/
+/lint/intermediates/
+
+# Ignore the google-services.json file
+app/google-services.json
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Compiled class files
+*.class
+
+# Files for Android Studio
+*.ipr
+*.iws
+*.jar
+*.war
+out/

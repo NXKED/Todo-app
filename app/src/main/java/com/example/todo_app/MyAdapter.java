@@ -30,6 +30,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         private boolean hasCheckbox;
 
         private String taskCreator;
+        private String key;
+
+        public TodoItem() {
+
+        }
 
         public TodoItem(String taskName, String taskCreator, boolean completed, boolean hasCheckbox) {
             this.taskName = taskName;
@@ -59,6 +64,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         public boolean isHasCheckbox() {
             return hasCheckbox;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getKey(){
+            return key;
         }
     }
 
