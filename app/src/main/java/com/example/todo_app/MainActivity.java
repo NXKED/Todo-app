@@ -1,11 +1,13 @@
 package com.example.todo_app;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.InputType;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -48,7 +50,10 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<MyAdapter.TodoItem> items;
     private RecyclerView recyclerView;
+    private RecyclerView recyclerView2;
     private Button button;
+    private Button buttonGoToAll;
+
     private MyAdapter itemsAdapter;
     private TextView itemCountTextView;
     private int itemCounter = 0;
@@ -63,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         button = findViewById(R.id.button);
+        button.setOnClickListener(view -> addItem());
+
         itemCountTextView = findViewById(R.id.todoCount);
         CheckBox checkboxMe = findViewById(R.id.checkboxMe);
 
@@ -70,8 +77,23 @@ public class MainActivity extends AppCompatActivity {
         items = new ArrayList<>();
         initializeAdapter();
 
+        //List2 (completed Items List)
+        ArrayList<MyAdapter.TodoItem> completedItems = filteredCompletedItems(items);
+        recyclerView2 = findViewById(R.id.recyclerView2);
+        buttonGoToAll = findViewById(R.id.buttonGoToAll);
+
+        // onclick to new activity ListItemsDone view
+        buttonGoToAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ListItemsDone.class);
+                startActivity(intent);
+            }
+        });
+
+
+
         itemCountTextView.setText(String.valueOf(itemCounter));
-        button.setOnClickListener(view -> addItem());
 
         // retreive Data from Firebase db
 
@@ -97,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(android.R.id.content), "Database Error", Snackbar.LENGTH_SHORT).show();
             }
         });
+
+
 
 
         button.setOnClickListener(view -> addItem());
@@ -337,5 +361,19 @@ public class MainActivity extends AppCompatActivity {
         // adding a divider between the todos
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
     }
+
+    //create method to filter for just completed Items (for the list_items_done view)
+    private ArrayList<TodoItem> filteredCompletedItems(ArrayList<TodoItem> itemList) {
+        ArrayList<TodoItem> completedItems = new ArrayList<>();
+
+        for(TodoItem item : itemList) {
+            if (item.isCompleted()) {
+                completedItems.add(item);
+            }
+        }
+        return completedItems;
+    }
+
+
 
 }

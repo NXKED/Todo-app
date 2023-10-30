@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import android.widget.CheckBox;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private Context context;
@@ -93,16 +96,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.textView.setText(item.getTaskName());
         holder.creatorView.setText(item.getTaskCreator());
 
-        if (item.hasCheckbox) {
-            holder.checkbox.setVisibility(View.VISIBLE);
-        } else {
-            holder.checkbox.setVisibility(View.INVISIBLE);
-        }
-
         holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
            @Override
            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-            item.setCompleted(isChecked);
+               MyAdapter.TodoItem item = items.get(position);
+               item.setCompleted(isChecked);
+
+               DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("items").child(item.getKey());
+               databaseReference.child("completed").setValue(isChecked);
            }
        });
 
@@ -132,7 +133,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public ViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.taskName);
-            checkbox = itemView.findViewById(R.id.checkbox);
+            checkbox = itemView.findViewById(R.id.checkboxCompleted);
             creatorView = itemView.findViewById(R.id.taskCreator);
         }
     }
