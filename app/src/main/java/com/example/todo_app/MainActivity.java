@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         // onclick to new activity ListItemsDone view
         buttonGoToAll.setOnClickListener(new View.OnClickListener() {
+            ArrayList<MyAdapter.TodoItem> completedItem = filteredCompletedItems(items);
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, ListItemsDone.class);

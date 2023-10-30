@@ -1,6 +1,7 @@
 package com.example.todo_app;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,8 +103,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                MyAdapter.TodoItem item = items.get(position);
                item.setCompleted(isChecked);
 
-               DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("items").child(item.getKey());
-               databaseReference.child("completed").setValue(isChecked);
+               String itemKey = item.getKey();
+               if(itemKey != null && !itemKey.isEmpty()) {
+                   DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("items").child(itemKey);
+                   databaseReference.child("completed").setValue(isChecked);
+               } else {
+                   Log.e("my adapter"," invalid key for item");
+               }
            }
        });
 
