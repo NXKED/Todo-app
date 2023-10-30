@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<MyAdapter.TodoItem> items;
     private RecyclerView recyclerView;
-    private RecyclerView recyclerView2;
+    private RecyclerView recyclerView3;
     private Button button;
     private Button buttonGoToAll;
 
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         //List2 (completed Items List)
         ArrayList<MyAdapter.TodoItem> completedItems = filteredCompletedItems(items);
-        recyclerView2 = findViewById(R.id.recyclerView2);
+        recyclerView3 = findViewById(R.id.recyclerView3);
         buttonGoToAll = findViewById(R.id.buttonGoToAll);
 
         // onclick to new activity ListItemsDone view
@@ -103,16 +103,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 items.clear();
+                itemCounter = 0;
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     String key = snapshot.getKey();
                     MyAdapter.TodoItem todoItem = snapshot.getValue(TodoItem.class);
                     if(todoItem != null) {
                         todoItem.setKey(key);
                         items.add(todoItem);
+                        if(!todoItem.isCompleted()) {
+                            itemCounter++;
+                        }
                     }
                 }
                 itemsAdapter.notifyDataSetChanged();
                 updateRecyclerView();
+                itemCountTextView.setText(String.valueOf(itemCounter));
             }
 
             @Override
@@ -263,7 +268,11 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<MyAdapter.TodoItem> filteredItems = new ArrayList<>();
 
         for(MyAdapter.TodoItem item : items) {
-            if (!itsMe || !("Max Mustermann".equals(item.getTaskCreator()))) {
+            if (itsMe) {
+                if ("Max Mustermann".equals(item.getTaskCreator())) {
+                filteredItems.add(item);
+                }
+            } else {
                 filteredItems.add(item);
             }
         }

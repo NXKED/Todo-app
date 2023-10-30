@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +28,7 @@ public class ListItemsDone extends AppCompatActivity {
     private MyAdapter itemsAdapter;
     private DatabaseReference databaseReference;
     private Button buttonGoBack;
+    private TextView emptyTextView;
 
 
     @Override
@@ -42,11 +44,15 @@ public class ListItemsDone extends AppCompatActivity {
             }
         });
 
+
         recyclerView2 = findViewById(R.id.recyclerView2);
         databaseReference = FirebaseDatabase.getInstance().getReference("items");
 
+        emptyTextView = findViewById(R.id.emptyTextView);
+
         completedItems = new ArrayList<>();
         itemsAdapter = new MyAdapter(this, completedItems,null);
+        checkIfEmpty();
 
         recyclerView2.setAdapter(itemsAdapter);
         recyclerView2.setLayoutManager(new LinearLayoutManager(this));
@@ -59,6 +65,7 @@ public class ListItemsDone extends AppCompatActivity {
                 if (todoItem != null && todoItem.isCompleted()) {
                     completedItems.add(todoItem);
                     itemsAdapter.notifyDataSetChanged();
+                    checkIfEmpty();
                 }
             }
 
@@ -71,14 +78,40 @@ public class ListItemsDone extends AppCompatActivity {
                         if(current.getKey().equals(updatedTodoItem.getKey())) {
                             completedItems.set(i, updatedTodoItem);
                             itemsAdapter.notifyDataSetChanged();
+                            checkIfEmpty();
                             break;
                         }
                     }
                 }
             }
 
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+
 
         });
+
+
+    }
+
+    private void checkIfEmpty() {
+        if (completedItems.isEmpty()) {
+        emptyTextView.setVisibility(View.VISIBLE);
+        } else {
+        emptyTextView.setVisibility(View.GONE);
+        }
     }
 
 
