@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -28,7 +27,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -78,13 +76,11 @@ public class MainActivity extends AppCompatActivity {
         initializeAdapter();
 
         //List2 (completed Items List)
-        ArrayList<MyAdapter.TodoItem> completedItems = filteredCompletedItems(items);
         recyclerView3 = findViewById(R.id.recyclerView3);
         buttonGoToAll = findViewById(R.id.buttonGoToAll);
 
         // onclick to new activity ListItemsDone view
         buttonGoToAll.setOnClickListener(new View.OnClickListener() {
-            ArrayList<MyAdapter.TodoItem> completedItem = filteredCompletedItems(items);
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, ListItemsDone.class);
@@ -312,54 +308,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private class AddItemTask extends AsyncTask<String, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(String... params) {
-            String itemText = params[0];
-            String taskCreatorName = params[1];
-            return performNetworkRequest(itemText, taskCreatorName);
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if (result) {
-                // The network request was successful, update the UI
-                itemsAdapter.notifyDataSetChanged();
-                Toast.makeText(getApplicationContext(), "Item added successfully", Toast.LENGTH_SHORT).show();
-            } else {
-                // Handle the case when the request was not successful
-                Toast.makeText(getApplicationContext(), "Failed to add item", Toast.LENGTH_LONG).show();
-            }
-
-        }
-    }
-
-    private boolean performNetworkRequest(String itemText, String taskCreatorName) {
-        OkHttpClient client = new OkHttpClient();
-        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-        String json = "{ \"taskName\": \"" + itemText + "\", \"taskCreator\": \"" + taskCreatorName + "\", \"completed\": false, \"hasCheckbox\": true }";
-        RequestBody body = RequestBody.create(json, JSON);
-
-        Request request = new Request.Builder()
-                .url("https://todo-app-db1-default-rtdb.europe-west1.firebasedatabase.app/items.json")
-                .post(body)
-                .build();
-
-        try {
-            Response response = client.newCall(request).execute();
-            if (response.isSuccessful()) {
-                Snackbar.make(findViewById(android.R.id.content), "DB Successfull", Snackbar.LENGTH_SHORT).show();
-                return true;
-            } else {
-                Snackbar.make(findViewById(android.R.id.content), "DB Error", Snackbar.LENGTH_SHORT).show();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
     private void initializeAdapter(){
         itemsAdapter = new MyAdapter(this, items, new MyAdapter.OnItemLongClickListener(){
             @Override
@@ -371,18 +319,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         // adding a divider between the todos
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
-    }
-
-    //create method to filter for just completed Items (for the list_items_done view)
-    private ArrayList<TodoItem> filteredCompletedItems(ArrayList<TodoItem> itemList) {
-        ArrayList<TodoItem> completedItems = new ArrayList<>();
-
-        for(TodoItem item : itemList) {
-            if (item.isCompleted()) {
-                completedItems.add(item);
-            }
-        }
-        return completedItems;
     }
 
     private void updateTaskCreatorName (String newTaskCreator, String itemKey) {
