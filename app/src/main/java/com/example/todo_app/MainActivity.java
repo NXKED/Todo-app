@@ -297,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!newTaskCreator.isEmpty()) {
                     items.get(position).setTaskCreator(newTaskCreator);
                     itemsAdapter.notifyDataSetChanged();
+                    updateTaskCreatorName(newTaskCreator, items.get(position).getKey());
                 }
             }
         });
@@ -382,6 +383,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return completedItems;
+    }
+
+    private void updateTaskCreatorName (String newTaskCreator, String itemKey) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("items").child(itemKey);
+        databaseReference.child("taskCreator").setValue(newTaskCreator)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Snackbar.make(findViewById(android.R.id.content), "Task Creator updated", Snackbar.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception ex) {
+                        Snackbar.make(findViewById(android.R.id.content), "Failed to update Creator Name", Snackbar.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 
