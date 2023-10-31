@@ -2,7 +2,6 @@ package com.example.todo_app;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -35,16 +34,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
 
-import java.io.IOException;
+
 import java.util.ArrayList;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+
 
 
 
@@ -60,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView itemCountTextView;
     private int itemCounter = 0;
     boolean itsMe = false;
+    private String taskCreatorName = "Max M.";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +98,17 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
                 return false;
+            }
+        });
+
+
+        //Settings -> ViewSettings
+
+        Button settingsButton = findViewById(R.id.settingsButton);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showChangeTaskCreatorPopUp();
             }
         });
 
@@ -161,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
     private void addItem() {
         EditText input = findViewById(R.id.edit_text);
         String itemText = input.getText().toString();
-        String taskCreatorName = "Max Mustermann";
+
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("items");
 
         if (!itemText.isEmpty()) {
@@ -283,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
 
         for(MyAdapter.TodoItem item : items) {
             if (itsMe) {
-                if ("Max Mustermann".equals(item.getTaskCreator())) {
+                if (taskCreatorName.equals(item.getTaskCreator())) {
                 filteredItems.add(item);
                 }
             } else {
@@ -356,6 +362,35 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    private void showChangeTaskCreatorPopUp() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Change your name");
+
+        //Edit Text field for user to change the name
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newTaskCreator = input.getText().toString();
+                if (!newTaskCreator.isEmpty()) {
+                    taskCreatorName = newTaskCreator;
+
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
 
 
 }

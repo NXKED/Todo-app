@@ -45,13 +45,19 @@
 
         <CheckBox
             android:id="@+id/checkboxMe"
-            android:layout_width="344dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="0dp"
             android:text="Just my to-do's"
             android:textAllCaps="true"
             android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/settingsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings" />
 
         <TextView
             android:id="@+id/todoCount"
@@ -64,6 +70,7 @@
             android:textSize="24sp"
             android:textStyle="bold"
             tools:text="99" />
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
