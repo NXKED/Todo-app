@@ -3,7 +3,6 @@ package com.example.todo_app;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -53,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private Button buttonGoToAll;
 
     private MyAdapter itemsAdapter;
-    private MyAdapter completedItemsAdapter;
+    private CompletedItemsAdapter completedItemsAdapter;
     private DatabaseReference databaseReference;
     private TextView itemCountTextView;
     private int itemCounter = 0;
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
         //done items list on mainActivity
         completedItems = new ArrayList<>();
-        completedItemsAdapter = new MyAdapter(this, completedItems, null);
+        completedItemsAdapter = new CompletedItemsAdapter(this, completedItems);
 
         recyclerView3.setAdapter(completedItemsAdapter);
         recyclerView3.setLayoutManager(new LinearLayoutManager(this));
@@ -155,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("items");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 items.clear();
                 itemCounter = 0;
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
@@ -191,6 +190,20 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 itsMe = isChecked;
                 updateRecyclerView();
+            }
+        });
+
+        Button buttonDoneVisible = findViewById(R.id.buttonDoneVisible);
+        buttonDoneVisible.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                filterCompletedItems();
+                if (!showCompletedItems) {
+                    buttonDoneVisible.setText("Einblenden");
+                } else {
+                    buttonDoneVisible.setText("Ausblenden");
+                }
+
             }
         });
 
@@ -298,13 +311,13 @@ public class MainActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            if (position < items.size()) {
+                            if(position < items.size()) {
                             items.remove(position);
                             itemsAdapter.notifyDataSetChanged();
-                            } else {
-                                Log.e("RemoveItem", "Invalid pos");
-                            }
                             Toast.makeText(getApplicationContext(), "Item removed", Toast.LENGTH_LONG).show();
+                            } else {
+                                Log.e("RemoveItem","Invalid pos");
+                            }
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -332,6 +345,25 @@ public class MainActivity extends AppCompatActivity {
         }
 
         itemsAdapter.setItems(filteredItems);
+        itemsAdapter.notifyDataSetChanged();
+    }
+
+    private boolean showCompletedItems = true;
+    private void filterCompletedItems() {
+        if(showCompletedItems) {
+            showCompletedItems = false;
+            ArrayList<MyAdapter.TodoItem> openTasks = new ArrayList<>();
+
+            for(MyAdapter.TodoItem item: items) {
+                if (!item.isCompleted()) {
+                    openTasks.add(item);
+                }
+            }
+            itemsAdapter.setItems(openTasks);
+        } else {
+            showCompletedItems = true;
+            itemsAdapter.setItems(items);
+        }
         itemsAdapter.notifyDataSetChanged();
     }
 
