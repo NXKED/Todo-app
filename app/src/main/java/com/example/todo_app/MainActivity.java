@@ -3,6 +3,7 @@ package com.example.todo_app;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -45,12 +46,15 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<MyAdapter.TodoItem> items;
+    private ArrayList<MyAdapter.TodoItem> completedItems;
     private RecyclerView recyclerView;
     private RecyclerView recyclerView3;
     private Button button;
     private Button buttonGoToAll;
 
     private MyAdapter itemsAdapter;
+    private MyAdapter completedItemsAdapter;
+    private DatabaseReference databaseReference;
     private TextView itemCountTextView;
     private int itemCounter = 0;
     boolean itsMe = false;
@@ -77,6 +81,36 @@ public class MainActivity extends AppCompatActivity {
         //List2 (completed Items List)
         recyclerView3 = findViewById(R.id.recyclerView3);
         buttonGoToAll = findViewById(R.id.buttonGoToAll);
+
+        //done items list on mainActivity
+        completedItems = new ArrayList<>();
+        completedItemsAdapter = new MyAdapter(this, completedItems, null);
+
+        recyclerView3.setAdapter(completedItemsAdapter);
+        recyclerView3.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView3.addItemDecoration(new DividerItemDecoration(recyclerView3.getContext(), DividerItemDecoration.VERTICAL));
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("items");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                completedItems.clear();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    MyAdapter.TodoItem todoItem = snapshot.getValue(TodoItem.class);
+
+                    if (todoItem != null && todoItem.isCompleted()) {
+                        completedItems.add(todoItem);
+                    }
+                }
+                completedItemsAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Snackbar.make(findViewById(android.R.id.content), "Database Error recV3", Snackbar.LENGTH_SHORT).show();
+            }
+        });
 
         // onclick to new activity ListItemsDone view
         buttonGoToAll.setOnClickListener(new View.OnClickListener() {
