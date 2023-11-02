@@ -370,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showTaskCreatorChange(int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Change Task Creator");
+        builder.setTitle("Assign to other User");
 
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);

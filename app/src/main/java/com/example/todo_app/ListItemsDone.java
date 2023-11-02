@@ -73,13 +73,15 @@ public class ListItemsDone extends AppCompatActivity {
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
                 MyAdapter.TodoItem updatedTodoItem = dataSnapshot.getValue(TodoItem.class);
                 if(updatedTodoItem != null) {
-                    for (int i = 0; i < completedItems.size(); i++) {
-                        MyAdapter.TodoItem current = completedItems.get(i);
-                        if(current.getKey().equals(updatedTodoItem.getKey())) {
-                            completedItems.set(i, updatedTodoItem);
-                            itemsAdapter.notifyDataSetChanged();
-                            checkIfEmpty();
-                            break;
+                    if (completedItems != null) {
+                        for (int i = 0; i < completedItems.size(); i++) {
+                            MyAdapter.TodoItem current = completedItems.get(i);
+                            if (current.getKey().equals(updatedTodoItem.getKey()) && current != null && current.getKey() != null) {
+                                completedItems.set(i, updatedTodoItem);
+                                itemsAdapter.notifyDataSetChanged();
+                                checkIfEmpty();
+                                break;
+                            }
                         }
                     }
                 }
