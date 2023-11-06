@@ -24,7 +24,7 @@
             android:imeOptions="actionDone"
             android:layout_weight="4"
             android:backgroundTint="#673AB7"
-            android:hint="Enter Item" />
+            android:hint="Enter ToDo" />
 
         <Button
             android:id="@+id/button"
@@ -49,9 +49,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="0dp"
+            android:checked="false"
             android:text="Just my to-do's"
             android:textAllCaps="true"
-            android:textColor="#FFFFFF" />
+            android:textColor="#FFFFFF"
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/settingsButton"

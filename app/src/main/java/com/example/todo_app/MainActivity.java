@@ -57,8 +57,13 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private TextView itemCountTextView;
     private int itemCounter = 0;
-    boolean itsMe = false;
+    private boolean itsMe = false;
     private String taskCreatorName = "Max M.";
+
+    //DB references
+    private static final String ITEMS_REFERENCE = "items";
+    private static final String TASK_CREATOR_REFERENCE = "taskCreator";
+    private static final String TASK_TIME_REFERENCE = "taskTime";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView3.setLayoutManager(new LinearLayoutManager(this));
         recyclerView3.addItemDecoration(new DividerItemDecoration(recyclerView3.getContext(), DividerItemDecoration.VERTICAL));
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("items");
+        databaseReference = FirebaseDatabase.getInstance().getReference(ITEMS_REFERENCE);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -223,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
         EditText input = findViewById(R.id.edit_text);
         String itemText = input.getText().toString();
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("items");
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(ITEMS_REFERENCE);
 
         if (!itemText.isEmpty()) {
             DatabaseReference newItemReference = databaseReference.push();
@@ -441,9 +446,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateTaskDetails (String itemKey, String newTaskCreator, String newTaskTime) {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("items").child(itemKey);
-        databaseReference.child("taskCreator").setValue(newTaskCreator);
-        databaseReference.child("taskTime").setValue(newTaskTime)
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(ITEMS_REFERENCE).child(itemKey);
+        databaseReference.child(TASK_CREATOR_REFERENCE).setValue(newTaskCreator);
+        databaseReference.child(TASK_TIME_REFERENCE).setValue(newTaskTime)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {

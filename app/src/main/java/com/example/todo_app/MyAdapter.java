@@ -15,7 +15,6 @@ import android.widget.CheckBox;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import org.w3c.dom.Text;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
@@ -33,7 +32,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public static class TodoItem {
         private String taskName;
         private boolean completed;
-        private boolean hasCheckbox;
 
         private String taskCreator;
         private String key;
