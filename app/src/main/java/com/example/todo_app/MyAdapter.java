@@ -43,10 +43,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         }
 
-        public TodoItem(String taskName, String taskCreator, boolean completed, boolean hasCheckbox) {
+        public TodoItem(String taskName, String taskCreator, boolean completed) {
             this.taskName = taskName;
             this.completed = completed;
-            this.hasCheckbox = hasCheckbox;
             this.taskCreator = taskCreator;
         }
 

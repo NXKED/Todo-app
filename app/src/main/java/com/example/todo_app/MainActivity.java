@@ -1,5 +1,6 @@
 package com.example.todo_app;
 
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,9 +39,8 @@ import com.google.firebase.database.ValueEventListener;
 
 
 import java.util.ArrayList;
-
-
-
+import java.util.Calendar;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -115,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         buttonGoToAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ListItemsDone.class);
+                Intent intent = new Intent(MainActivity.this, AllDoneItems.class);
                 startActivity(intent);
             }
         });
@@ -149,8 +150,40 @@ public class MainActivity extends AppCompatActivity {
 
         itemCountTextView.setText(String.valueOf(itemCounter));
 
-        // retreive Data from Firebase db
+        fetchDataFromDatabase();
 
+
+
+
+        button.setOnClickListener(view -> addItem());
+
+        // checkbox to have only my to-do's
+        checkboxMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                itsMe = isChecked;
+                updateRecyclerView();
+            }
+        });
+
+        Button buttonDoneVisible = findViewById(R.id.buttonDoneVisible);
+        buttonDoneVisible.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                filterCompletedItems();
+                if (!showCompletedItems) {
+                    buttonDoneVisible.setText("Show");
+                } else {
+                    buttonDoneVisible.setText("Hide");
+                }
+
+            }
+        });
+
+        enableSwipeToDelete();
+    }
+
+    private void fetchDataFromDatabase() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("items");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -178,36 +211,11 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(android.R.id.content), "Database Error", Snackbar.LENGTH_SHORT).show();
             }
         });
+    }
 
-
-
-
-        button.setOnClickListener(view -> addItem());
-
-        // checkbox to have only my to-do's
-        checkboxMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                itsMe = isChecked;
-                updateRecyclerView();
-            }
-        });
-
-        Button buttonDoneVisible = findViewById(R.id.buttonDoneVisible);
-        buttonDoneVisible.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                filterCompletedItems();
-                if (!showCompletedItems) {
-                    buttonDoneVisible.setText("Einblenden");
-                } else {
-                    buttonDoneVisible.setText("Ausblenden");
-                }
-
-            }
-        });
-
-        enableSwipeToDelete();
+    protected void onResume() {
+        super.onResume();
+        fetchDataFromDatabase();
     }
 
 
@@ -222,8 +230,9 @@ public class MainActivity extends AppCompatActivity {
             String newItemKey = newItemReference.getKey();
 
             if (newItemKey != null) {
-                TodoItem todoItem = new MyAdapter.TodoItem(itemText, taskCreatorName, false, true);
-                todoItem.setTaskTime("Set-Due");
+                TodoItem todoItem = new MyAdapter.TodoItem(itemText, taskCreatorName, false);
+                todoItem.setTaskTime("Set-Date");
+                todoItem.setKey(newItemKey);
 
                 if (items.isEmpty()) {
                     items = new ArrayList<>();
@@ -376,15 +385,24 @@ public class MainActivity extends AppCompatActivity {
 
         final EditText inputCreator = dialogView.findViewById(R.id.editTaskCreator);
         final EditText inputTime = dialogView.findViewById(R.id.editTaskTime);
+        final Button dueDateButton = dialogView.findViewById(R.id.editDueDateButton);
 
         MyAdapter.TodoItem currentItem = items.get(position);
 
         inputCreator.setText(currentItem.getTaskCreator());
         inputTime.setText(currentItem.getTaskTime());
 
+        dueDateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePickerDialog(inputTime);
+            }
+        });
+
+
         builder.setView(dialogView);
 
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newTaskCreator = inputCreator.getText().toString();
@@ -469,6 +487,28 @@ public class MainActivity extends AppCompatActivity {
         });
 
         builder.show();
+    }
+
+    private void showDatePickerDialog(final EditText dateEditText) {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        String formattedDate = String.format(Locale.getDefault(), "%02d-%02d-%04d", dayOfMonth, month + 1, year);
+                        dateEditText.setText(formattedDate);
+                    }
+                },
+                year,
+                month,
+                day
+        );
+        datePickerDialog.show();
     }
 
 
