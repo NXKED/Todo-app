@@ -1,0 +1,24 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+
+    <EditText
+        android:id="@+id/editTaskCreator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Edit Task Creator"
+        android:maxLength="10"
+        />
+
+    <EditText
+        android:id="@+id/editTaskTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Edit Task Time"
+        />
+
+</LinearLayout>

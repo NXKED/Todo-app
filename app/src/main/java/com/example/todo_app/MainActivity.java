@@ -223,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (newItemKey != null) {
                 TodoItem todoItem = new MyAdapter.TodoItem(itemText, taskCreatorName, false, true);
+                todoItem.setTaskTime("Set-Due");
 
                 if (items.isEmpty()) {
                     items = new ArrayList<>();
@@ -370,20 +371,30 @@ public class MainActivity extends AppCompatActivity {
 
     private void showTaskCreatorChange(int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Assign to other User");
+        builder.setTitle("Edit Task Details");
+        View dialogView = getLayoutInflater().inflate(R.layout.edit_task_details, null);
 
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
+        final EditText inputCreator = dialogView.findViewById(R.id.editTaskCreator);
+        final EditText inputTime = dialogView.findViewById(R.id.editTaskTime);
+
+        MyAdapter.TodoItem currentItem = items.get(position);
+
+        inputCreator.setText(currentItem.getTaskCreator());
+        inputTime.setText(currentItem.getTaskTime());
+
+        builder.setView(dialogView);
 
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String newTaskCreator = input.getText().toString();
+                String newTaskCreator = inputCreator.getText().toString();
+                String newTaskTime = inputTime.getText().toString();
+
                 if(!newTaskCreator.isEmpty()) {
-                    items.get(position).setTaskCreator(newTaskCreator);
+                    currentItem.setTaskCreator(newTaskCreator);
+                    currentItem.setTaskTime(newTaskTime);
                     itemsAdapter.notifyDataSetChanged();
-                    updateTaskCreatorName(newTaskCreator, items.get(position).getKey());
+                    updateTaskDetails(currentItem.getKey(), newTaskCreator, newTaskTime);
                 }
             }
         });
@@ -411,23 +422,25 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
     }
 
-    private void updateTaskCreatorName (String newTaskCreator, String itemKey) {
+    private void updateTaskDetails (String itemKey, String newTaskCreator, String newTaskTime) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("items").child(itemKey);
-        databaseReference.child("taskCreator").setValue(newTaskCreator)
+        databaseReference.child("taskCreator").setValue(newTaskCreator);
+        databaseReference.child("taskTime").setValue(newTaskTime)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        Snackbar.make(findViewById(android.R.id.content), "Task Creator updated", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(android.R.id.content), "Task Details updated", Snackbar.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception ex) {
-                        Snackbar.make(findViewById(android.R.id.content), "Failed to update Creator Name", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(android.R.id.content), "Failed to update Task Details", Snackbar.LENGTH_SHORT).show();
                     }
                 });
     }
 
+    // changing User/ task Creator on Device
     private void showChangeTaskCreatorPopUp() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Change your name");

@@ -15,6 +15,8 @@ import android.widget.CheckBox;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.w3c.dom.Text;
+
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private Context context;
@@ -35,6 +37,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         private String taskCreator;
         private String key;
+        private String taskTime;
 
         public TodoItem() {
 
@@ -66,8 +69,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             this.taskCreator = taskCreator;
         }
 
-        public boolean isHasCheckbox() {
-            return hasCheckbox;
+        public void setTaskTime (String dueDate) {
+            this.taskTime = dueDate;
+        }
+
+        public String getTaskTime() {
+            return taskTime;
         }
 
         public void setKey(String key) {
@@ -96,6 +103,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         TodoItem item = items.get(position);
         holder.textView.setText(item.getTaskName());
         holder.creatorView.setText(item.getTaskCreator());
+        holder.timeView.setText(item.getTaskTime());
 
         holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
            @Override
@@ -135,12 +143,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         TextView textView;
         TextView creatorView;
         CheckBox checkbox;
+        TextView timeView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.taskName);
             checkbox = itemView.findViewById(R.id.checkboxCompleted);
             creatorView = itemView.findViewById(R.id.taskCreator);
+            timeView = itemView.findViewById(R.id.taskTime);
         }
     }
 
