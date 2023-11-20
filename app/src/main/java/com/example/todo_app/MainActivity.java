@@ -71,13 +71,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FirebaseApp.initializeApp(this);
+        enableSwipeToDelete();
 
         recyclerView = findViewById(R.id.recyclerView);
         button = findViewById(R.id.button);
         button.setOnClickListener(view -> addItem());
 
         itemCountTextView = findViewById(R.id.todoCount);
-        CheckBox checkboxMe = findViewById(R.id.checkboxMe);
 
         // adding a list to add items to
         items = new ArrayList<>();
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView3.setAdapter(completedItemsAdapter);
         recyclerView3.setLayoutManager(new LinearLayoutManager(this));
         recyclerView3.addItemDecoration(new DividerItemDecoration(recyclerView3.getContext(), DividerItemDecoration.VERTICAL));
-
+        
         databaseReference = FirebaseDatabase.getInstance().getReference(ITEMS_REFERENCE);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -151,18 +151,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
         itemCountTextView.setText(String.valueOf(itemCounter));
 
         fetchDataFromDatabase();
 
-
-
-
         button.setOnClickListener(view -> addItem());
 
         // checkbox to have only my to-do's
+        CheckBox checkboxMe = findViewById(R.id.checkboxMe);
         checkboxMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -185,11 +181,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        enableSwipeToDelete();
     }
 
     private void fetchDataFromDatabase() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("items");
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(ITEMS_REFERENCE);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -321,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (keyToRemove != null) {
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-            DatabaseReference itemReference = databaseReference.child("items").child(itemToRemove.getKey());
+            DatabaseReference itemReference = databaseReference.child(ITEMS_REFERENCE).child(itemToRemove.getKey());
             itemReference.removeValue()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

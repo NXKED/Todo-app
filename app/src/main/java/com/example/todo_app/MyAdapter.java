@@ -119,7 +119,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
        });
 
         holder.checkbox.setChecked(item.isCompleted());
-
         // on long click listener
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
